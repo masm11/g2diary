@@ -30,12 +30,14 @@ class G2DiaryIndex
 
     str.each_char do |c|
       next if c =~ /\s/    # 空白文字だったら無視
+      c.downcase!
       kws[c] = true
     end
 
     (0...str.length-1).each do |i|
       cc = str[i, 2]
       next if cc =~ /\s/    # 空白文字を含んでたら無視
+      cc.downcase!
       kws[cc] = true
     end
 
@@ -66,6 +68,7 @@ class G2DiaryIndex
     kws.each do |kw, _|
       paths = paths.intersection(paths_of(kw))
     end
+    strs.map! { |str| str.downcase }
     paths.select! do |path|
       data = File.read(path)
       strs.all? { |str| data.include? str }
