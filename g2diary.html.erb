@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>検索結果</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootswatch/4.0.0/darkly/bootstrap.min.css" rel="stylesheet" integrity="sha384-p8bH4RlA/kdF4wbAoep+/6VeOQI2IAWa9zLjTIQbQLv2FuCjX/W/FkdYdeKISDvK" crossorigin="anonymous">
+    <style>
+      <!--
+	  small.counts {
+	    padding-left: 0em;
+	    line-height: 2rem;
+	  }
+	-->
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+	<div class="col-12 col-xl-8">
+	  <div class="row">
+	    <h2 class="col-5 col-xl-3">検索結果</h2>
+	    <small class="counts col-6 col-xl-3">
+	      <% if @total_nr_items >= 1 %>
+	        (<%= @page_begin + 1%>〜<%= @page_end %>件め / <%= @total_nr_items %>件中)
+	      <% end %>
+	    </small>
+	    <div class="col-12 col-xl-6">
+	      <form method="GET" action="<%= @search_url %>">
+		<div class="form-group">
+		  <div class="input-group">
+		    <input type="search" value="<%= ERB::Util.html_escape @q %>" name="q" class="form-control form-control-sm"/>
+		    <input type="submit" name="submit" value="再検索" class="btn btn-sm btn-primary input-group-append"/>
+		    <small class="form-text d-xl-none"><a href="#how-to-search" class="link-to-how-to-search">検索方法</a></small>
+		  </div>
+		</div>
+	      </form>
+	    </div>
+	  </div>
+
+	  <% if @items.length == 0 %>
+	    <div class="row">
+	      <div class="col-12">
+		<p>検索結果がありません。</p>
+	      </div>
+	    </div>
+	  <% else %>
+	    <% @items.each do |h| %>
+	      <div class="row">
+		<div class="col-12">
+		  <div class="card mb-3">
+		    <div class="card-body">
+		      <div class="d-flex w-100 justify-content-between">
+			<h5 class="card-title"><a href="<%= h[:url] %>" class="card-link"><%= ERB::Util.html_escape h[:title] %></a></h5>
+			<small class="date">(<%= h[:date] %>)</small>
+		      </div>
+		      <p class="card-text d-none d-xl-block"><small><%= ERB::Util.html_escape h[:body] %></small></p>
+		      <p class="card-text d-block d-xl-none"><small><%= ERB::Util.html_escape h[:body_xs] %></small></p>
+		    </div>
+		  </div>
+		</div>
+	      </div>
+	    <% end %>
+	  <% end %>
+
+<%
+def page_url(pno)
+  "#{@search_url}?q=#{ERB::Util.url_encode @q}&page=#{pno}"
+end
+%>
+
+	  <div class="row">
+	    <div class="col-12">
+	      <nav aria-label="Pages">
+		<ul class="pagination justify-content-center">
+		  <li class="page-item <%= @page <= 1 ? 'disabled' : '' %>">
+		    <a class="page-link" href="<%= page_url(1) %>" aria-label="Previous">
+		      <span aria-hidden="true">&laquo;</span>
+		      <span class="sr-only">Previous</span>
+		    </a>
+		  </li>
+		  <%# 左端のページ番号と << のページ番号との間に開きがあるなら … を表示 %>
+		  <% if (@page - 3) - 1 > 0 %>
+		    <li class="page-item disabled"><a class="page-link" href="#">…</a></li>
+		  <% end %>
+
+		  <% (1..@nr_pages).each do |p| %>
+		    <% if p >= @page - 3 && p <= @page + 3 %>
+		      <li class="page-item <%= p == @page ? 'active' : '' %>"><a class="page-link" href="<%= page_url(p) %>"><%= p %></a></li>
+		    <% end %>
+		  <% end %>
+
+		  <%# 右端のページ番号と >> のページ番号との間に開きがあるなら … を表示 %>
+		  <% if @nr_pages - (@page + 3) > 0 %>
+		    <li class="page-item disabled"><a class="page-link" href="#">…</a></li>
+		  <% end %>
+		  <li class="page-item <%= @page >= @nr_pages ? 'disabled' : '' %>">
+		    <a class="page-link" href="<%= page_url(@nr_pages) %>" aria-label="Next">
+		      <span aria-hidden="true">&raquo;</span>
+		      <span class="sr-only">Next</span>
+		    </a>
+		  </li>
+		</ul>
+	      </nav>
+	    </div>
+	  </div>
+
+	</div>
+
+	<div class="col-xl-4">
+	  <h5><a name="how-to-search">検索方法</a></h5>
+	  <ul>
+	    <li><p>単一の単語で検索する場合</p>
+	      <p>
+		その単語を入力してください。
+	      </p>
+	    </li>
+	    <li><p>複数の単語で AND 検索する場合</p>
+	      <p>
+		それらの単語を空白区切りで列挙してください。
+	      </p>
+	    </li>
+	    <li><p>使える演算子</p>
+	      <p>
+		and or not ( ) が使えます。いずれも小文字です。
+		ただし、Google 検索等の一般の検索エンジンと異なり、or より and の方が優先度が上です。
+	      </p>
+	      <p>
+		これは私の好みでそういう仕様にしてあります。
+	      </p>
+	    </li>
+	    <li><p>単語区切りについて</p>
+	      <p>
+		内部で使用している形態素解析器には長めの単語に区切るように設定してあります。
+	      </p>
+	      <p>
+		それでも一つの単語が途中で切られてしまう場合はきっとあり、
+		その場合は複数の単語とみなし、AND 検索しますので、
+		文書中で離れた位置に出現していることがあります。
+	      </p>
+	      <p>
+		また、形態素解析器が単語を正規化しています。例えば、「bar」で検索すると
+		「バー」にマッチしますし、「こっち」で検索すると「此方」にもマッチします。
+	      </p>
+	    </li>
+	    <li><p>結果表示について</p>
+	      <p>
+		常に新しい記事から順に表示します。
+	      </p>
+	  </ul>
+
+	</div>
+      </div>
+    </div>
+  </body>
+</html>
