@@ -55,6 +55,7 @@ def handle(req, res)
   paths = grep.parsed do |snt|
     snt.nil? ? idx.all_docs : idx.search(snt)
   end
+  paths = paths.sort.reverse
 
   @total_nr_items = paths.length
   @nr_pages = (@total_nr_items + MAX_ITEMS - 1) / MAX_ITEMS

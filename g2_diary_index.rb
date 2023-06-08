@@ -73,7 +73,7 @@ class G2DiaryIndex
       data = File.read(path)
       data.include? str
     end
-    paths.sort.reverse
+    paths
   end
 
   def all_docs
