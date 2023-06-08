@@ -73,6 +73,7 @@ class G2DiaryIndex
     str.downcase!
     paths.select! do |path|
       data = File.read(path)
+      data.downcase!
       data.include? str
     end
     paths
