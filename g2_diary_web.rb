@@ -3,6 +3,7 @@
 require 'erb'
 require 'webrick'
 require_relative 'g2_diary_index'
+require_relative 'g2_grep'
 
 MAX_BODY_CHARS = 256
 MAX_BODY_CHARS_FOR_XS = 150
@@ -50,7 +51,10 @@ def handle(req, res)
   end
 
   idx = G2DiaryIndex.new(false)
-  paths = idx.search(@q.split)
+  grep = G2Grep.new(@q)
+  paths = grep.parsed do |snt|
+    snt.nil? ? idx.all_docs : idx.search(snt)
+  end
 
   @total_nr_items = paths.length
   @nr_pages = (@total_nr_items + MAX_ITEMS - 1) / MAX_ITEMS

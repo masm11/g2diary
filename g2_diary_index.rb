@@ -62,17 +62,27 @@ class G2DiaryIndex
     @index[kw]&.keys || []
   end
 
-  def search(strs)
-    kws = string_to_bigram(strs.join(' '))
+  def search(str)
+    kws = string_to_bigram(str)
     paths = paths_of(kws.keys.first)
     kws.each do |kw, _|
       paths = paths.intersection(paths_of(kw))
     end
-    strs.map! { |str| str.downcase }
+    str.downcase!
     paths.select! do |path|
       data = File.read(path)
-      strs.all? { |str| data.include? str }
+      data.include? str
     end
     paths.sort.reverse
+  end
+
+  def all_docs
+    r = {}
+    @index.each do |_, paths|
+      paths.each do |path, _|
+        r[path] = true
+      end
+    end
+    r.keys
   end
 end
