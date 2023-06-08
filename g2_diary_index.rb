@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'set'
+
 class G2DiaryIndex
   INDEX_FILE = ENV['G2_INDEX_FILE'] || './index.g2'
 
@@ -47,8 +49,8 @@ class G2DiaryIndex
   def add_file(path)
     data = File.read(path)
     string_to_bigram(data).each do |kw, _|
-      @index[kw] ||= {}
-      @index[kw][path] = true
+      @index[kw] ||= Set.new
+      @index[kw] << path
     end
   end
 
@@ -59,7 +61,7 @@ class G2DiaryIndex
   end
 
   def paths_of(kw)
-    @index[kw]&.keys || []
+    @index[kw].dup || Set.new
   end
 
   def search(str)
@@ -77,12 +79,10 @@ class G2DiaryIndex
   end
 
   def all_docs
-    r = {}
+    r = Set.new
     @index.each do |_, paths|
-      paths.each do |path, _|
-        r[path] = true
-      end
+      r = r.union(paths)
     end
-    r.keys
+    r
   end
 end
