@@ -7,7 +7,7 @@ class G2Grep
   
   def parsed(&block)
     @block = block
-    @parsed ||= eval_expr(@query)
+    @parsed ||= eval_expr(@query).keys
     @parsed
   end
 
