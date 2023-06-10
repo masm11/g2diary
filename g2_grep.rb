@@ -105,7 +105,7 @@ class G2Grep
         if s.nil?
           break
         end
-        ary = ary.union(s)
+        ary = ary.merge(s)
       end
       ary
     rescue QStateBack
@@ -129,7 +129,7 @@ class G2Grep
         if s.nil?
           break
         end
-        ary = ary.intersection(s)
+        ary = ary.slice(*s.keys)
       end
       ary
     rescue QStateBack
@@ -153,7 +153,7 @@ class G2Grep
         if s.nil?
           break
         end
-        ary = ary.intersection(s)
+        ary = ary.slice(*s.keys)
       end
       ary
     rescue QStateBack

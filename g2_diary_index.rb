@@ -49,8 +49,8 @@ class G2DiaryIndex
   def add_file(path)
     data = File.read(path)
     string_to_bigram(data).each do |kw, _|
-      @index[kw] ||= Set.new
-      @index[kw] << path
+      @index[kw] ||= {}         # スピードのため Hash を使う。Set は遅い
+      @index[kw][path] = true
     end
   end
 
@@ -61,14 +61,17 @@ class G2DiaryIndex
   end
 
   def paths_of(kw)
-    @index[kw].dup || Set.new
+    @index[kw]&.dup || {}
   end
 
   def search(str)
     kws = string_to_bigram(str)
+    if kws.empty?
+      return {}
+    end
     paths = paths_of(kws.keys.first)
     kws.each do |kw, _|
-      paths = paths.intersection(paths_of(kw))
+      paths = paths.slice(*paths_of(kw).keys)
     end
     str.downcase!
     paths.select! do |path|
@@ -80,9 +83,9 @@ class G2DiaryIndex
   end
 
   def all_docs
-    r = Set.new
+    r = {}
     @index.each do |_, paths|
-      r = r.union(paths)
+      r.merge!(paths)
     end
     r
   end
