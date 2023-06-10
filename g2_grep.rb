@@ -172,7 +172,7 @@ class G2Grep
         if s.nil?
           q.throw
         end
-        return @block.call(nil) - s
+        return @block.call(nil).except(*s.keys)
       end
       s = eval_expr_par(q)
       if s.nil?
