@@ -33,8 +33,8 @@ def handle(req, res)
     return
   end
 
-  url_prefix = 'https://www.masm11.me/~masm/tdiary'
-  @search_url = ENV['SEARCH_URL'] || 'http://localhost/'
+  url_prefix = ENV['TDIARY_URL'] || 'http://mike/tdiary'
+  @search_url = ENV['SEARCH_URL'] || 'http://localhost:8005/'
 
   query = req.query
   @q = (query['q'] || '').force_encoding('UTF-8')
