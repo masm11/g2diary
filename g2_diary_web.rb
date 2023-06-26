@@ -33,7 +33,7 @@ def handle(req, res)
     return
   end
 
-  url_prefix = ENV['TDIARY_URL'] || 'http://mike/tdiary'
+  url_prefix = ENV['TDIARY_URL'] || 'http://mike2/tdiary'
   @search_url = ENV['SEARCH_URL'] || 'http://localhost:8005/'
 
   query = req.query
