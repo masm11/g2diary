@@ -5,11 +5,11 @@ After=network.target
 [Service]
 Type=simple
 Environment=LANG=ja_JP.utf-8
-Environment=TDIARY_URL=http://mike2/tdiary
-Environment=SEARCH_URL=http://localhost:8005
+Environment=TDIARY_URL=https://www.masm11.me/~masm/tdiary
+Environment=SEARCH_URL=https://www.masm11.me/~masm/g2diary
 User=masm
-WorkingDirectory=/home/service/g2diary
-ExecStart=/home/service/g2diary/g2_diary_web.rb
+WorkingDirectory=/home/masm/g2diary
+ExecStart=/home/masm/g2diary/g2_diary_web.rb
 #ExecStop=pkill
 StandardOutput=journal
 StandardError=journal
